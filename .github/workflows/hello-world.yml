@@ -5,19 +5,19 @@ on:
     branches: [master]
 
 jobs:
-  hello_world_from_django_project:
+  test_django_project:
     runs-on: ubuntu-latest
     env:
-      HELLO_WORLD_SECRET: "${{ secrets.HELLO_WORLD_SECRET }}"
+      DJANGO_SECRETS_KEY: "${{ secrets.DJANGO_SECRETS_KEY }}"
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
-      - name: Run Hello World
+        uses: actions/checkout@v4
+      - name: Check Django Secrets
         run: |
-          echo "Hello World"
-          echo "HELLO_WORLD_SECRET: ${{ env.HELLO_WORLD_SECRET }}"
+          echo "Echo is working!"
+          echo "DJANGO_SECRETS_KEY: ${{ env.DJANGO_SECRETS_KEY }}"
       - name: "Setup Python"
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v4
         with:
           python-version: "3.10"
       - name: "Install Dependencies"
