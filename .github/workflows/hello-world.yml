@@ -16,7 +16,6 @@ jobs:
         run: |
           echo "Hello World"
           echo "HELLO_WORLD_SECRET: ${{ env.HELLO_WORLD_SECRET }}"
-    steps:
       - name: "Setup Python"
         uses: actions/setup-python@v3
         with:
