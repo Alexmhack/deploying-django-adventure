@@ -143,3 +143,5 @@ jobs:
       - name: "Run Django Tests"
         run: python3 manage.py test
 ```
+
+For more information the `setup-python` actions check out this [link](https://github.com/actions/setup-python).
