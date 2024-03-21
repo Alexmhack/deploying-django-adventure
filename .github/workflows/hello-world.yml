@@ -1,9 +1,8 @@
 name: Hello World Workflow for Learning
 
 on:
-  workflow_dispatch:
-    push:
-      branches: [master]
+  push:
+    branches: [master]
 
 jobs:
   hello_world_from_django_project:
@@ -16,4 +15,4 @@ jobs:
       - name: Run Hello World
         run: |
           echo "Hello World"
-          echo "HELLO_WORLD_SECRET: ${HELLO_WORLD_SECRET}"
+          echo "HELLO_WORLD_SECRET: ${env.HELLO_WORLD_SECRET}"
