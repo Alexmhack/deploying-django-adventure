@@ -8,9 +8,12 @@ on:
 jobs:
   hello_world_from_django_project:
     runs-on: ubuntu-latest
+    env:
+      HELLO_WORLD_SECRET: "test-secret"
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Run Hello World
         run: |
           echo "Hello World"
+          echo "HELLO_WORLD_SECRET: ${HELLO_WORLD_SECRET}"
