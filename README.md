@@ -57,6 +57,7 @@ secrets in the repository, so for that GitHub provides Secrets in the Settings o
 Once we have defined our repository secrets we can use them in the workflow files using the same format `${{ ... }}` but this time 
 picking them up from `${{ secrets.SECRET_NAME }}`
 
+*.github/workflows/hello-world.yml*
 ```
 name: Hello World Workflow
 
@@ -76,4 +77,69 @@ jobs:
         run: |
           echo "Hello World"
           echo "HELLO_WORLD_SECRET: ${{ env.HELLO_WORLD_SECRET }}"
+```
+
+Now for a slightly complex example we will add a basic test case in our blog app and run it using workflows.
+
+*.github/workflows/hello-world.yml*
+```
+name: Hello World Workflow
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  hello_world_on_django_project:
+    runs-on: ubuntu-latest
+    env:
+      HELLO_WORLD_SECRET: "${{ secrets.HELLO_WORLD_SECRET }}"
+    steps:
+      - name: Checkout Code
+      	uses: actions/checkout@v3
+      - name: Echo Hello World
+        run: |
+          echo "Hello World"
+          echo "HELLO_WORLD_SECRET: ${{ env.HELLO_WORLD_SECRET }}"
+      - name: Setup Python
+      	uses: actions/setup-python@v3
+  	    with:
+  	      python-version: "3.10"
+  	  - name: Install Dependencies
+  	    run: pip3 install -r requirements.txt
+  	  - name: Run Django Tests
+  	    run: python3 manage.py test
+```
+
+And soon as we push our code onto origin this workflow will start running with the defined steps in the job and it will run the Django 
+Test case as well.
+
+Now since this a demo app for learning purposes we have not hidden our `DJANGO_SECRET_KEY` but in production environment we have to 
+use environment variables and hide our keys.
+
+So what we'll be doing is using the GitHub Secrets for storing our environment variable and using this variable in the workflows yml 
+file.
+
+```
+name: "Django Test Cases Workflow"
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  test_django_project:
+    runs-on: ubuntu-latest
+    env:
+      DJANGO_SECRET_KEY: "${{ secrets.DJANGO_SECRET_KEY }}"
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.10"
+      - name: "Install Dependencies"
+        run: pip3 install -r requirements.txt
+      - name: "Run Django Tests"
+        run: python3 manage.py test
 ```
