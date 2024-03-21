@@ -11,8 +11,8 @@ jobs:
       HELLO_WORLD_SECRET: "test-secret"
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Run Hello World
         run: |
           echo "Hello World"
-          echo "HELLO_WORLD_SECRET: ${env.HELLO_WORLD_SECRET}"
+          echo "HELLO_WORLD_SECRET: ${{ env.HELLO_WORLD_SECRET }}"
