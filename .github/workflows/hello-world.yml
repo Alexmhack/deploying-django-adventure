@@ -8,7 +8,7 @@ jobs:
   hello_world_from_django_project:
     runs-on: ubuntu-latest
     env:
-      HELLO_WORLD_SECRET: "test-secret"
+      HELLO_WORLD_SECRET: "${{ secrets.HELLO_WORLD_SECRET }}"
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
