@@ -6,8 +6,10 @@ on:
   push:
     branches: [master]
 
+# a workflow run comprises of multiple or single job that can run sequentially on in parallel
 jobs:
   test_project:
     uses: ./.github/workflows/test_project.yml
     secrets:
       DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+      POSTGRES_TEST_PASSWORD : ${{ secrets.POSTGRES_TEST_PASSWORD  }}
