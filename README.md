@@ -145,3 +145,31 @@ jobs:
 ```
 
 For more information the `setup-python` actions check out this [link](https://github.com/actions/setup-python).
+
+#### all.yml Workflow
+
+In a production-grade project, there could be multiple workflows and managing them separately and disabling enabling them as our
+project advances as well as adding more secrets and environment variables in these workflows can become hectic, so to avoid that
+situation we can run all the workflows by defining them in a single workflow.
+
+We would name this file all.yml since this workflow would run all the other workflows in our project.
+
+*.github/workflows/all.yml*
+```
+name: Project's all the Workflows
+
+on:
+  workflow_dispatch:
+
+  push:
+  	branches: [master]
+
+jobs:
+  test_project:
+  	uses: ./github/workflows/hello-world.yml
+```
+
+Now if we push our code then you will find that the workflow named *Project's all the Workflows* has run twice. This is because we 
+have configured the workflow to run on `push` on master branch and the same has been done in the *hello-world.yml* workflow file as 
+well, so to avoid this situation we will remove the `push` trigger from all the other workflow files and instead add `workflow_call` 
+as the trigger.
