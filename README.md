@@ -173,3 +173,6 @@ Now if we push our code then you will find that the workflow named *Project's al
 have configured the workflow to run on `push` on master branch and the same has been done in the *hello-world.yml* workflow file as 
 well, so to avoid this situation we will remove the `push` trigger from all the other workflow files and instead add `workflow_call` 
 as the trigger.
+
+In the above workflow file, you may have noticed `workflow_dispatch:` event trigger, this is actually very useful as this provides us 
+with the option to run this workflow manually from the GitHub Actions.

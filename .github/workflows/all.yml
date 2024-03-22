@@ -7,13 +7,7 @@ on:
     branches: [master]
 
 jobs:
-  hello_world:
-    uses: ./.github/workflows/hello-world.yml
-    secrets:
-      DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
-
-  hello_world_again:
-    needs: hello_world
-    uses: ./.github/workflows/hello-world.yml
+  test_project:
+    uses: ./.github/workflows/test_project.yml
     secrets:
       DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
