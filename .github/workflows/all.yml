@@ -2,7 +2,7 @@ name: "Project's all the Workflows"
 
 on:
   workflow_dispatch:
-    # runs whenever a workflow has been dispatched
+    # gives option to run this workflow manually from GitHub Actions UI
   push:
     branches: [master]
 

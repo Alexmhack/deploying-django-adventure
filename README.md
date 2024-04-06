@@ -176,3 +176,10 @@ as the trigger.
 
 In the above workflow file, you may have noticed `workflow_dispatch:` event trigger, this is actually very useful as this provides us 
 with the option to run this workflow manually from the GitHub Actions.
+
+#### PostgreSQL Setup for Workflow
+
+Since in production we won't be using SQLite DB, we would want to run our tests as well on a production-grade or the database that is
+being used in production by our application. I prefer PostgreSQL for Django projects and so we will have to replace our SQLite DB with
+PostgreSQL in *settings.py* as well and modify the *test_project.yml* workflow to spawn up PostgreSQL DB for our workflow and use 
+setup env vars for our Django as well.
