@@ -15,7 +15,4 @@ jobs:
       POSTGRES_TEST_PASSWORD : ${{ secrets.POSTGRES_TEST_PASSWORD }}
   build_project:
     uses: ./.github/workflows/container.yml
-    secrets:
-      DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
-      POSTGRES_TEST_PASSWORD : ${{ secrets.POSTGRES_TEST_PASSWORD }}
     needs: test_project
