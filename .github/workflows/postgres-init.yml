@@ -44,9 +44,10 @@ jobs:
             IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = _new_user) THEN
               RAISE NOTICE 'Database role already exists';
               PERFORM dblink_connect('host=localhost user=' || _owner_user || ' password=' || _owner_password || ' dbname=' || current_database());
+              PERFORM dblink_exec('GRANT ALL PRIVILEGES ON DATABASE "' || _db || '" TO ' || _new_user || '; ');
             ELSE
               PERFORM dblink_connect('host=localhost user=' || _owner_user || ' password=' || _owner_password || ' dbname=' || current_database());
-              PERFORM dblink_exec('CREATE USER ' || _new_user || ' WITH LOGIN PASSWORD ' || quote_literal(_new_user_password) || ' SUPERUSER; ');
+              PERFORM dblink_exec('CREATE USER ' || _new_user || ' WITH LOGIN PASSWORD ' || quote_literal(_new_user_password) || ' CREATEDB CREATEROLE; ');
               RAISE NOTICE 'Database role created';
             END IF;
 
@@ -60,6 +61,7 @@ jobs:
 
             /*  grant all privileges of the database to the user */
             PERFORM dblink_exec('GRANT ALL PRIVILEGES ON DATABASE "' || _db || '" TO ' || _new_user || '; ');
+            PERFORM dblink_exec('GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO ' || _new_user || '; ');
           END
           $do$
       - name: Connect to PostgreSQL

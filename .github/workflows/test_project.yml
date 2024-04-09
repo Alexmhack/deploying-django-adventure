@@ -63,4 +63,4 @@ jobs:
       - name: Echo DB Backend
         run: echo $DATABASE_BACKEND
       - name: Run Test
-        run: python3.10 manage.py test
+        run: python3.10 manage.py test --noinput
