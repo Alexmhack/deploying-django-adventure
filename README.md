@@ -183,3 +183,74 @@ Since in production we won't be using SQLite DB, we would want to run our tests 
 being used in production by our application. I prefer PostgreSQL for Django projects and so we will have to replace our SQLite DB with
 PostgreSQL in *settings.py* as well and modify the *test_project.yml* workflow to spawn up PostgreSQL DB for our workflow and use 
 setup env vars for our Django as well.
+
+This section gets a little complicated as we setup the PostgreSQL DB first locally in Docker Container then on Azure and then create a
+GitHub Workflow Dispatch Action for configuring Azure PostgreSQL DB.
+
+1. PostgreSQL Setup Locally in Docker Container
+
+*I commonly use PostgreSQL, you are welcome to use other SQL Databases as well*
+
+Provisioning a development environment PostgreSQL DB locally using Docker container is very easy, you just need to define a `docker-compose.yaml` file which has a postgres service in it, below is a basic example.
+
+```
+version: "3.9"
+
+services:
+  postgres_main:
+    image: "postgres:16.2-alpine3.19"
+    restart: unless-stopped
+    volumes:
+      - django_dev_db_vol:/var/lib/postgresql/data
+    env_file:
+      - .env
+    ports:
+      - 5432:5432
+    expose:
+      - 5432
+
+volumes:
+  - django_dev_db_vol
+```
+
+This very basic service can be broken down into,
+
+1. `name` of the service - `postgres_main` - this name is used by Docker for name of the container
+2. `image` - `postgres:...` - PostgreSQL official image available on [https://hub.docker.com/](https://hub.docker.com/) can be easily copied and pasted(I have used alpine since its smaller in size and since development env)
+3. `restart` - There are a few other options available for the Docker Container `restart` policy, we are using `unless-stopped` means
+to not restart the `postgres_main` service unless it has been deliberately stopped. `always` is a very commonly used option.
+4. `env_file` - We can define environment variables using `environment` also and if you want to use an already existing `.env` file like in my case then define all those env files here.
+5. `ports` - This is very important as it defined the target and the published port of this service, if we change this then we need
+to make it same in our Django settings as well.
+6. `expose` - Think of this as the outside world connection of this container, without this our service won't be accessible outside and it would just act like a VPC.
+7. `volumes` - Since Docker Container can be brought up and down, the data is not persistent and DB cannot have loss of data if container crashes or is stopped down, so volumes are defined which are local machine paths where the actual data is stored of this particular service. 
+
+If you check the official Docker Hub for PostgreSQL then you will find some pre-defined environment variables which need to be defined
+in order to provision the DB, they are,
+
+```
+POSTGRES_PASSWORD=<>
+POSTGRES_USER=<>
+POSTGRES_DB=<>
+POSTGRES_PORT=5432
+```
+
+These are the important ones, you can look more at the Docker Hub.
+
+We will define these same in our `.env` file to be used by Django Settings for connecting to this DB in dev environment.
+
+To start this service simply run, `docker compose up -d` (`-d` for detached mode). Use `docker compose down` for bringing down this 
+service(container).
+
+2. PostgreSQL Setup on Azure
+
+Azure Database for PostgreSQL flexible server provides 750 hours of free usage where you can test and play around. It's very straight 
+forward and simple, the values used while creating this DB from Azure UI or CLI will be used in `.env` file for connecting with the
+DB using Django.
+
+Make sure to allow Access to outside network either by whitelisting your current IP or by allowing All and making sure Database 
+Password is tough.
+
+3. DB init Script
+
+This was a little complicated part for me since PostgreSQL does not provide command utilities like `IF NOT EXISTS`, for the alternative in psql there are `DO` statements which allow `IF PERFORM` etc code.
