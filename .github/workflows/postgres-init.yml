@@ -6,61 +6,61 @@ on:
 jobs:
   postgresql_client:
     runs-on: ubuntu-latest
-  steps:
-    - name: Update apt-get Packages
-      run: sudo apt-get update
-    - name: Install PostgreSQL Client
-      run: sudo apt-get install postgresql
-    - name: Echo PostgreSQL Version
-      run: echo $(psql -V)
-    - name: Create DB Config File
-      run: |
-        cat << EOF > .db-service
-        [django_main]
-        user=${{ secrets.POSTGRESQL_DB_ROOT_USER }}
-        password=${{ secrets.POSTGRESQL_DB_ROOT_PASSWORD }}
-        host=${{ secrets.POSTGRESQL_DB_HOST }}
-        port=${{ secrets.POSTGRES_DB_PORT }}
-        EOF
-        cat << EOF > .db-pass
-        ${{ secrets.POSTGRESQL_DB_HOST }}:${{ secrets.POSTGRES_DB_PORT }}:${{ secrets.POSTGRES_DB_NAME }}:${{ secrets.POSTGRESQL_DB_ROOT_USER }}:${{ secrets.POSTGRESQL_DB_ROOT_PASSWORD }}
-        EOF
-        export PGSERVICEFILE=.db-service PGPASSFILE=.db-pass
-    - name: Create DB Init File
-      run: |
-        cat << EOF - db-init.sql
-        /* create database if not exists */
-        DO
-        $do$
-        DECLARE
-          _db TEXT := ${{ secrets.POSTGRES_DB }};
-          _owner_user TEXT := ${{ secrets.POSTGRESQL_DB_ROOT_USER }};
-          _owner_password TEXT := ${{ secrets.POSTGRESQL_DB_ROOT_PASSWORD }};
-          _new_user TEXT := ${{ secrets.POSTGRES_DB_USER }};
-          _new_user_password TEXT := ${{ secrets.POSTGRES_DB_USER_PASSWORD }};
-        BEGIN
-          CREATE EXTENSION IF NOT EXISTS dblink; -- enable extension 
+    steps:
+      - name: Update apt-get Packages
+        run: sudo apt-get update
+      - name: Install PostgreSQL Client
+        run: sudo apt-get install postgresql
+      - name: Echo PostgreSQL Version
+        run: echo $(psql -V)
+      - name: Create DB Config File
+        run: |
+          cat << EOF > .db-service
+          [django_main]
+          user=${{ secrets.POSTGRESQL_DB_ROOT_USER }}
+          password=${{ secrets.POSTGRESQL_DB_ROOT_PASSWORD }}
+          host=${{ secrets.POSTGRESQL_DB_HOST }}
+          port=${{ secrets.POSTGRES_DB_PORT }}
+          EOF
+          cat << EOF > .db-pass
+          ${{ secrets.POSTGRESQL_DB_HOST }}:${{ secrets.POSTGRES_DB_PORT }}:${{ secrets.POSTGRES_DB_NAME }}:${{ secrets.POSTGRESQL_DB_ROOT_USER }}:${{ secrets.POSTGRESQL_DB_ROOT_PASSWORD }}
+          EOF
+          export PGSERVICEFILE=.db-service PGPASSFILE=.db-pass
+      - name: Create DB Init File
+        run: |
+          cat << EOF - db-init.sql
+          /* create database if not exists */
+          DO
+          $do$
+          DECLARE
+            _db TEXT := ${{ secrets.POSTGRES_DB }};
+            _owner_user TEXT := ${{ secrets.POSTGRESQL_DB_ROOT_USER }};
+            _owner_password TEXT := ${{ secrets.POSTGRESQL_DB_ROOT_PASSWORD }};
+            _new_user TEXT := ${{ secrets.POSTGRES_DB_USER }};
+            _new_user_password TEXT := ${{ secrets.POSTGRES_DB_USER_PASSWORD }};
+          BEGIN
+            CREATE EXTENSION IF NOT EXISTS dblink; -- enable extension 
 
-          IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = _new_user) THEN
-            RAISE NOTICE 'Database role already exists';
-            PERFORM dblink_connect('host=localhost user=' || _owner_user || ' password=' || _owner_password || ' dbname=' || current_database());
-          ELSE
-            PERFORM dblink_connect('host=localhost user=' || _owner_user || ' password=' || _owner_password || ' dbname=' || current_database());
-            PERFORM dblink_exec('CREATE USER ' || _new_user || ' WITH LOGIN PASSWORD ' || quote_literal(_new_user_password) || ' SUPERUSER; ');
-            RAISE NOTICE 'Database role created';
-          END IF;
+            IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = _new_user) THEN
+              RAISE NOTICE 'Database role already exists';
+              PERFORM dblink_connect('host=localhost user=' || _owner_user || ' password=' || _owner_password || ' dbname=' || current_database());
+            ELSE
+              PERFORM dblink_connect('host=localhost user=' || _owner_user || ' password=' || _owner_password || ' dbname=' || current_database());
+              PERFORM dblink_exec('CREATE USER ' || _new_user || ' WITH LOGIN PASSWORD ' || quote_literal(_new_user_password) || ' SUPERUSER; ');
+              RAISE NOTICE 'Database role created';
+            END IF;
 
-          IF EXISTS (SELECT 1 FROM pg_database WHERE datname = _db) THEN
-            RAISE NOTICE 'Database already exists';
-          ELSE
-            PERFORM dblink_connect('host=localhost user=' || _owner_user || ' password=' || _owner_password || ' dbname=' || current_database());
-            PERFORM dblink_exec('CREATE DATABASE "' || _db || '"; ');
-            RAISE NOTICE 'Database created';
-          END IF;
+            IF EXISTS (SELECT 1 FROM pg_database WHERE datname = _db) THEN
+              RAISE NOTICE 'Database already exists';
+            ELSE
+              PERFORM dblink_connect('host=localhost user=' || _owner_user || ' password=' || _owner_password || ' dbname=' || current_database());
+              PERFORM dblink_exec('CREATE DATABASE "' || _db || '"; ');
+              RAISE NOTICE 'Database created';
+            END IF;
 
-          /*  grant all privileges of the database to the user */
-          PERFORM dblink_exec('GRANT ALL PRIVILEGES ON DATABASE "' || _db || '" TO ' || _new_user || '; ');
-        END
-        $do$
-    - name: Connect to PostgreSQL
-      run: psql service=django_main
+            /*  grant all privileges of the database to the user */
+            PERFORM dblink_exec('GRANT ALL PRIVILEGES ON DATABASE "' || _db || '" TO ' || _new_user || '; ');
+          END
+          $do$
+      - name: Connect to PostgreSQL
+        run: psql service=django_main
