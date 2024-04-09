@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+  postgres_main:
+    image: "postgres:16.2-alpine3.19"
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "5432:5432"
+    expose:
+      - 5432
+    volumes:
+      - postgres_db_volume:/var/lib/postgresql/data
+
+volumes:
+  postgres_db_volume:
