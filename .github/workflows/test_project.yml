@@ -18,26 +18,26 @@ jobs:
       POSTGRES_USER: ${{ secrets.POSTGRES_DB_USER }}
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_DB_USER_PASSWORD }}
       POSTGRES_HOST: ${{ secrets.POSTGRESQL_DB_HOST }}
-      POSTGRES_DB_NAME: ${{ secrets.POSTGRESQL_DB_NAME }}
+      POSTGRES_DB: ${{ secrets.POSTGRESQL_DB_NAME }}
       POSTGRES_PORT: ${{ secrets.POSTGRES_DB_PORT }}  
       GITHUB_ACTIONS: true
       DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
       DATABASE_BACKEND: ${{ secrets.DATABASE_BACKEND }}
 
-    services:
-      postgres_main:
-        image: postgres:16
-        env:
-          POSTGRES_USER: ${{ env.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
-          POSTGRES_DB_NAME: ${{ env.POSTGRES_DB_NAME }}
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready 
-          --health-interval 10s 
-          --health-timeout 5s 
-          --health-retries 5
+    # services:
+    #   postgres_main:
+    #     image: postgres:16
+    #     env:
+    #       POSTGRES_USER: ${{ env.POSTGRES_USER }}
+    #       POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
+    #       POSTGRES_DB_NAME: ${{ env.POSTGRES_DB_NAME }}
+    #     ports:
+    #       - 5432:5432
+    #     options: >-
+    #       --health-cmd pg_isready 
+    #       --health-interval 10s 
+    #       --health-timeout 5s 
+    #       --health-retries 5
 
     steps:
       - name: Checkout Code
