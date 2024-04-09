@@ -7,7 +7,17 @@ on:
     secrets:
       DJANGO_SECRET_KEY:
         required: true
-      POSTGRES_TEST_PASSWORD:
+      DATABASE_BACKEND:
+        required: true
+      POSTGRES_DB_USER:
+        required: true
+      POSTGRES_DB_USER_PASSWORD:
+        required: true
+      POSTGRESQL_DB_HOST:
+        required: true
+      POSTGRESQL_DB_NAME:
+        required: true
+      POSTGRES_DB_PORT:
         required: true
 
 jobs:
