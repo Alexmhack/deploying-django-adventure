@@ -22,7 +22,7 @@ jobs:
       POSTGRES_PORT: ${{ secrets.POSTGRES_DB_PORT }}  
       GITHUB_ACTIONS: true
       DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
-      DATABASE_BACKEND: ${{ environment.DATABASE_BACKEND }}
+      DATABASE_BACKEND: ${{ secrets.DATABASE_BACKEND }}
 
     services:
       postgres_main:
