@@ -19,10 +19,10 @@ jobs:
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_DB_USER_PASSWORD }}
       POSTGRES_HOST: ${{ secrets.POSTGRESQL_DB_HOST }}
       POSTGRES_DB_NAME: ${{ secrets.POSTGRESQL_DB_NAME }}
-      POSTGRES_PORT: ${{ secrets.POSTGRES_DB_PORT }}
+      POSTGRES_PORT: ${{ secrets.POSTGRES_DB_PORT }}  
       GITHUB_ACTIONS: true
       DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
-      DATABASE_BACKEND: ${{ env.DATABASE_BACKEND }}
+      DATABASE_BACKEND: ${{ environment.DATABASE_BACKEND }}
 
     services:
       postgres_main:
