@@ -11,12 +11,11 @@ jobs:
   test_project:
     uses: ./.github/workflows/test_project.yml
     secrets:
-      POSTGRES_USER: ${{ secrets.POSTGRES_DB_USER }}
-      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_DB_USER_PASSWORD }}
-      POSTGRES_HOST: ${{ secrets.POSTGRESQL_DB_HOST }}
-      POSTGRES_DB: ${{ secrets.POSTGRESQL_DB_NAME }}
-      POSTGRES_PORT: ${{ secrets.POSTGRES_DB_PORT }}  
-      GITHUB_ACTIONS: true
+      POSTGRES_DB_USER : ${{ secrets.POSTGRES_DB_USER }}
+      POSTGRES_DB_USER_PASSWORD: ${{ secrets.POSTGRES_DB_USER_PASSWORD }}
+      POSTGRESQL_DB_HOST: ${{ secrets.POSTGRESQL_DB_HOST }}
+      POSTGRESQL_DB_NAME: ${{ secrets.POSTGRESQL_DB_NAME }}
+      POSTGRES_DB_PORT: ${{ secrets.POSTGRES_DB_PORT }}  
       DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
       DATABASE_BACKEND: ${{ secrets.DATABASE_BACKEND }}
   build_project:
