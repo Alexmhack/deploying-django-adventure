@@ -50,5 +50,7 @@ jobs:
         run: |
           python3.10 -m pip install --upgrade pip && \
           python3.10 -m pip install -r requirements.txt
+      - name: Echo DB Backend
+        run: echo $DATABASE_BACKEND
       - name: Run Test
         run: python3.10 manage.py test
