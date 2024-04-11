@@ -25,3 +25,9 @@ jobs:
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
       DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
       DOCKERHUB_APP_NAME: ${{ secrets.DOCKERHUB_APP_NAME }}
+  collectstatic:
+    uses: ./.github/workflows/collectstatic.yml
+    needs: test_project
+    secrets:
+      AZURE_ACCOUNT_NAME: ${{ secrets.AZURE_ACCOUNT_NAME }}
+      AZURE_ACCOUNT_KEY: ${{ secrets.AZURE_ACCOUNT_KEY }}

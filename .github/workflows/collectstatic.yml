@@ -1,0 +1,33 @@
+name: Collect Static for Django Project
+
+on:
+  workflow_dispatch:
+
+  workflow_call:
+    secrets:
+      AZURE_ACCOUNT_NAME:
+        required: true
+      AZURE_ACCOUNT_KEY:
+        required: true
+
+jobs:
+  test_project:
+    runs-on: ubuntu-latest
+
+    env:
+      AZURE_ACCOUNT_NAME: ${{ secrets.AZURE_ACCOUNT_NAME }}
+      AZURE_ACCOUNT_KEY: ${{ secrets.AZURE_ACCOUNT_KEY }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: Install Dependencies
+        run: |
+          python3.10 -m pip install --upgrade pip && \
+          python3.10 -m pip install -r requirements.txt
+      - name: Collect Static
+        run: python3.10 manage.py collectstatic --noinput
