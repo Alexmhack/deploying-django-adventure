@@ -13,9 +13,9 @@ on:
         required: true
       POSTGRES_DB_USER_PASSWORD:
         required: true
-      POSTGRESQL_DB_HOST:
+      POSTGRES_DB_HOST:
         required: true
-      POSTGRESQL_DB_NAME:
+      POSTGRES_DB_NAME:
         required: true
       POSTGRES_DB_PORT:
         required: true
@@ -25,10 +25,10 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      POSTGRES_USER: ${{ secrets.POSTGRES_DB_ROOT_USER }}
-      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_DB_ROOT_USER_PASSWORD }}
-      POSTGRES_HOST: ${{ secrets.POSTGRESQL_DB_HOST }}
-      POSTGRES_DB: ${{ secrets.POSTGRESQL_DB_NAME }}
+      POSTGRES_USER: ${{ secrets.POSTGRES_DB_USER }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_DB_USER_PASSWORD }}
+      POSTGRES_HOST: ${{ secrets.POSTGRES_DB_HOST }}
+      POSTGRES_DB: ${{ secrets.POSTGRES_DB_NAME }}
       POSTGRES_PORT: ${{ secrets.POSTGRES_DB_PORT }}  
       GITHUB_ACTIONS: true
       DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
