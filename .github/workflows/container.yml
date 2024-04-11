@@ -30,7 +30,7 @@ jobs:
         run: |
           docker build -f Dockerfile \
           -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_APP_NAME }}:latest \
-          -t ${GITHUB_SHA::7}-${GITHUB_RUN_ID::5} \
+          -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_APP_NAME }}:${GITHUB_SHA::7}-${GITHUB_RUN_ID::5} \
            . --compress
       - name: Push Docker Image
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_APP_NAME }} --all-tags
