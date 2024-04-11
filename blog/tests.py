@@ -10,6 +10,6 @@ class BlogTestCase(TestCase):
 
     def test_blogs_created(self):
         """Blogs that can speak are correctly identified"""
+        print(settings.DATABASES)
         first_blog = Blog.objects.first()
-        print(settings.SECRET_KEY)
         self.assertEqual(first_blog.title, "First Blog")

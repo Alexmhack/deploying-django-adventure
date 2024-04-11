@@ -11,8 +11,8 @@ jobs:
   test_project:
     uses: ./.github/workflows/test_project.yml
     secrets:
-      POSTGRES_DB_USER : ${{ secrets.POSTGRES_DB_USER }}
-      POSTGRES_DB_USER_PASSWORD: ${{ secrets.POSTGRES_DB_USER_PASSWORD }}
+      POSTGRES_DB_USER : ${{ secrets.POSTGRES_DB_ROOT_USER }}
+      POSTGRES_DB_USER_PASSWORD: ${{ secrets.POSTGRES_DB_ROOT_USER_PASSWORD }}
       POSTGRESQL_DB_HOST: ${{ secrets.POSTGRESQL_DB_HOST }}
       POSTGRESQL_DB_NAME: ${{ secrets.POSTGRESQL_DB_NAME }}
       POSTGRES_DB_PORT: ${{ secrets.POSTGRES_DB_PORT }}  
@@ -21,3 +21,7 @@ jobs:
   build_project:
     uses: ./.github/workflows/container.yml
     needs: test_project
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+      DOCKERHUB_APP_NAME: ${{ secrets.DOCKERHUB_APP_NAME }}
