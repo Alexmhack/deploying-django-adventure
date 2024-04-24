@@ -254,3 +254,125 @@ Password is tough.
 3. DB init Script
 
 This was a little complicated part for me since PostgreSQL does not provide command utilities like `IF NOT EXISTS`, for the alternative in psql there are `DO` statements which allow `IF PERFORM` etc code.
+
+## Infrastructure using Terraform
+
+Now we will be using `terraform` to setup the infrastructure of our application on Microsoft Azure.
+
+First we will setup and run everything locally and then write a simple workflow for handling the Infra Setup from GitHub Actions.
+
+1. Login to Azure
+  Using Azure CLI, `az login` -> Login to Microsoft Azure, create an account if not already created and setup Billing etc.
+
+2. Create a Service Principle for accessing/modifying the Azure resources using CLI. Consider this as an AWS IAM User with programmatic access only which can work on behalf of a proper UI User and setup things from CLI only.
+  `az ad sp create-for-rbac -n "youremailid@onmicrosoft.com"` - We are mentioning the name to specify for this RBAC(Role based access control) SP(service principle) AD(Azure Directory) user because sometimes when working with Azure it can give you and error saying, *Values of identifierUris property must use a verified domain of the organization or its subdomain: ...*.
+
+  The above command will output the app ID, name, password etc details for the RBAC, store them for later use,
+  ```
+  {
+    "appId": "00000000-0000-0000-0000-000000000000",
+    "displayName": "azure-cli-2017-06-05-10-41-15",
+    "name": "http://azure-cli-2017-06-05-10-41-15",
+    "password": "0000-0000-0000-0000-000000000000",
+    "tenant": "00000000-0000-0000-0000-000000000000"
+  }
+  ```
+
+3. Create a new *devops* folder in your root folder and inside it create another folder named *tf*, we will be using *ansible* as well
+later in our application and so we need to separate our infra files.
+
+4. Inside *devops/tf* create a `main.tf` file which will be the root of our terraform infra setup.
+
+5. Some very simple commands that runs your `terraform` setup are,
+  - `terraform -chdir=devops/tf/ init` - Run this from the root of your project where *devops* folder is located, if it is located somewhere else then pass that location to `-chdir` global configuration argument to terraform
+  - `terraform -chdir=devops/tf/ fmt` - Formats all your terraform files(with extension `.tf, .tfvars`)
+  - `terraform -chdir=devops/tf/ validate` - Validates whether all the terraform related files have proper syntax etc.
+  - `terraform -chdir=devops/tf/ apply` - Applies all the terraform resources to the Provider(Microsoft Azure in our case)
+  - `terraform -chdir=devops/tf/ apply -auto-approve` - `apply` and other resource update command requires you to manually enter
+  `yes` to approve the infra updates/additions, to automatically approve the terraform operations for example in GitHub Actions use `-auto-approve` (Yes I know it should have been `--auto-approve` as per the old habits with other CLI tools, but No!)
+
+  - `terraform -chdir=devops/tf/ destory` - Destroys all the resouces
+
+6. Using Azure SP for terraform,
+  ```
+  # sh
+  export ARM_CLIENT_ID="00000000-0000-0000-0000-000000000000"
+  export ARM_CLIENT_SECRET="12345678-0000-0000-0000-000000000000"
+  export ARM_TENANT_ID="10000000-0000-0000-0000-000000000000"
+  export ARM_SUBSCRIPTION_ID="20000000-0000-0000-0000-000000000000"
+  ```
+  After this running `terraform plan` or `terraform apply` will ensure that the terraform is using the above created SP for terraform usage.
+  You can also mention these in the `main.tf` file itself just like we will do for our GitHub Action.
+
+### GitHub Workflow for Infra
+
+*infra.yml*
+```
+terraform {
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "=3.0.0"
+    }
+  }
+}
+
+# Configure the Microsoft Azure Provider
+provider "azurerm" {
+  skip_provider_registration = true 
+  features {}
+
+  client_id       = var.azure_client_id
+  client_secret   = var.azure_client_secret
+  tenant_id       = var.azure_tenant_id
+  subscription_id = var.azure_subscription_id
+}
+
+resource "azure_resource_group" "gh_workflow_rg" {
+  name = var.workflow_rg_name
+  location = var.workflow_rg_location
+}
+```
+
+*variables.tf*
+```
+variable "azure_client_id" {
+  sensitive = true
+}
+
+variable "azure_client_secret" {
+  sensitive = true
+}
+
+variable "azure_tenant_id" {
+  sensitive = true
+}
+
+variable "azure_subscription_id" {
+  sensitive = true
+}
+
+variable "workflow_rg_location" {
+  sensitive = true
+}
+
+variable "workflow_rg_name" {
+  sensitive = true
+}
+```
+
+Now you may be wondering where will these variables value be coming from, those come from a file named `terraform.tfvars` which
+is a keyword file used by terraform to fetch the variable values and if the value of variable is not defined in the tfvars file then
+the default is picked up from `variables.tf`, for e.g.,
+
+*variables.tf*
+```
+variable "image_name" {
+  default = "ubuntu-22.04"
+}
+```
+
+# References
+
+1. [https://stackoverflow.com/questions/18389124/simulate-create-database-if-not-exists-for-postgresql/36218838#36218838](https://stackoverflow.com/questions/18389124/simulate-create-database-if-not-exists-for-postgresql/36218838#36218838)
+2. [https://www.timescale.com/blog/connecting-to-postgres-with-psql-and-pg_service-conf/](https://www.timescale.com/blog/connecting-to-postgres-with-psql-and-pg_service-conf/)
