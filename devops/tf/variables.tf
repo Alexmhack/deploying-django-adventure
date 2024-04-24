@@ -20,8 +20,10 @@ variable "azure_subscription_id" {
 
 variable "workflow_rg_location" {
   sensitive = true
+  default = "centralindia"
 }
 
 variable "workflow_rg_name" {
   sensitive = true
+  default = "Updated-Learning-TF-RG"
 }
